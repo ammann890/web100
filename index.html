@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Express - Logistics & Shipment Tracking</title>
+    <meta name="description" content="Global Express minimalist logistics tracking platform with parcel dimensions and recipient delivery verification." />
+    <meta property="og:title" content="Global Express - Logistics & Shipment Tracking" />
+    <meta property="og:description" content="Global Express minimalist logistics tracking platform with parcel dimensions and recipient delivery verification." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Tailwind CSS (CDN - No Build Step Required) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React 18 & ReactDOM 18 (CDN - No NPM Install Required) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+    <style>
+      /* Ensure clean background and fonts */
+      body {
+        background-color: #f8fafc;
+        color: #0f172a;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .animate-spin-custom {
+        animation: spin 1s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Complete Standalone Application Logic -->
+    <script>
+      (function () {
+        const { useState, useEffect, createElement: h } = window.React;
+        const { createRoot } = window.ReactDOM;
+
+        const VALID_TRACKING_ID = 'GE-849204812US';
+
+        const SHIPMENT_DATA = {
+          trackingId: VALID_TRACKING_ID,
+          serviceType: 'Global Express Freight Direct - Heavy Cargo Spec',
+          status: 'In Transit',
+          dispatchedDate: 'September 18, 2026 - 06:30 AM',
+          origin: {
+            city: 'Birmingham',
+            state: 'Alabama',
+            hubName: 'Alabama Regional Logistics Distribution Facility',
+          },
+          destination: {
+            name: 'Charles Andrew Bright',
+            street: '7475 E CR 600 south',
+            city: 'Greencastle',
+            state: 'Indiana',
+            zip: '46135',
+            address: '7475 E CR 600 south, Greencastle Indiana 46135',
+            age: '62 yrs old',
+            dob: 'October 23rd 1963',
+          },
+          dimensions: {
+            length: '~21 ft (251 in / 6.37 m)',
+            width: '~6.8 ft (82 in / 2.08 m)',
+            height: '~6.7 ft (80 in / 2.03 m)',
+            weight: '~7,000 lb (3,175 kg)',
+          },
+        };
+
+        // Inline SVG Icon Helpers (Zero external icon dependencies)
+        function IconGlobe(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('circle', { cx: '12', cy: '12', r: '10' }),
+            h('line', { x1: '2', y1: '12', x2: '22', y2: '12' }),
+            h('path', { d: 'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' })
+          );
+        }
+
+        function IconPackage(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('line', { x1: '16.5', y1: '9.4', x2: '7.5', y2: '4.21' }),
+            h('path', { d: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z' }),
+            h('polyline', { points: '3.27 6.96 12 12.01 20.73 6.96' }),
+            h('line', { x1: '12', y1: '22.08', x2: '12', y2: '12' })
+          );
+        }
+
+        function IconSearch(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('circle', { cx: '11', cy: '11', r: '8' }),
+            h('line', { x1: '21', y1: '21', x2: '16.65', y2: '16.65' })
+          );
+        }
+
+        function IconArrowRight(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('line', { x1: '5', y1: '12', x2: '19', y2: '12' }),
+            h('polyline', { points: '12 5 19 12 12 19' })
+          );
+        }
+
+        function IconArrowLeft(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('line', { x1: '19', y1: '12', x2: '5', y2: '12' }),
+            h('polyline', { points: '12 19 5 12 12 5' })
+          );
+        }
+
+        function IconX(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('line', { x1: '18', y1: '6', x2: '6', y2: '18' }),
+            h('line', { x1: '6', y1: '6', x2: '18', y2: '18' })
+          );
+        }
+
+        function IconAlertCircle(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('circle', { cx: '12', cy: '12', r: '10' }),
+            h('line', { x1: '12', y1: '8', x2: '12', y2: '12' }),
+            h('line', { x1: '12', y1: '16', x2: '12.01', y2: '16' })
+          );
+        }
+
+        function IconMapPin(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('path', { d: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' }),
+            h('circle', { cx: '12', cy: '10', r: '3' })
+          );
+        }
+
+        function IconUser(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('path', { d: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' }),
+            h('circle', { cx: '12', cy: '7', r: '4' })
+          );
+        }
+
+        function IconRuler(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('path', { d: 'M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0l12.6 12.6z' }),
+            h('line', { x1: '14.5', y1: '7.5', x2: '12.5', y2: '9.5' }),
+            h('line', { x1: '17.5', y1: '10.5', x2: '15.5', y2: '12.5' }),
+            h('line', { x1: '10.5', y1: '3.5', x2: '8.5', y2: '5.5' })
+          );
+        }
+
+        function IconCopy(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('rect', { x: '9', y: '9', width: '13', height: '13', rx: '2', ry: '2' }),
+            h('path', { d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' })
+          );
+        }
+
+        function IconCheck(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2.5', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('polyline', { points: '20 6 9 17 4 12' })
+          );
+        }
+
+        function IconShieldCheck(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' }),
+            h('polyline', { points: '9 12 11 14 15 10' })
+          );
+        }
+
+        function IconLoader(props) {
+          return h('svg', { ...props, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2.5', strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('line', { x1: '12', y1: '2', x2: '12', y2: '6' }),
+            h('line', { x1: '12', y1: '18', x2: '12', y2: '22' }),
+            h('line', { x1: '4.93', y1: '4.93', x2: '7.76', y2: '7.76' }),
+            h('line', { x1: '16.24', y1: '16.24', x2: '19.07', y2: '19.07' }),
+            h('line', { x1: '2', y1: '12', x2: '6', y2: '12' }),
+            h('line', { x1: '18', y1: '12', x2: '22', y2: '12' }),
+            h('line', { x1: '4.93', y1: '19.07', x2: '7.76', y2: '16.24' }),
+            h('line', { x1: '16.24', y1: '7.76', x2: '19.07', y2: '4.93' })
+          );
+        }
+
+        // 2.5-Second Pure White Screen with Spinning Semicircle Line
+        function LoadingScreen() {
+          return h('div', {
+            id: 'loading-screen',
+            className: 'fixed inset-0 z-50 bg-white flex flex-col items-center justify-center select-none',
+            role: 'status',
+            'aria-label': 'Loading package details'
+          },
+            h('div', { className: 'relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center' },
+              h('svg', {
+                className: 'w-full h-full text-sky-500 animate-spin-custom',
+                viewBox: '0 0 60 60',
+                fill: 'none',
+                xmlns: 'http://www.w3.org/2000/svg'
+              },
+                h('path', {
+                  d: 'M 30 6 A 24 24 0 0 1 30 54',
+                  stroke: 'currentColor',
+                  strokeWidth: '3.5',
+                  strokeLinecap: 'round'
+                })
+              )
+            )
+          );
+        }
+
+        // Header Component
+        function Header({ currentView, onResetToSearch }) {
+          return h('header', { id: 'main-header', className: 'sticky top-0 z-40 bg-white border-b border-sky-100' },
+            h('div', { className: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' },
+              h('div', { className: 'flex items-center justify-between h-16 sm:h-18' },
+                h('button', {
+                  id: 'brand-logo-btn',
+                  onClick: onResetToSearch,
+                  className: 'flex items-center gap-3 text-left focus:outline-hidden focus:ring-2 focus:ring-sky-400 rounded-md p-1 -ml-1 transition-transform hover:opacity-95 cursor-pointer',
+                  title: 'Global Express Home'
+                },
+                  h('div', { className: 'w-10 h-10 bg-sky-500 flex items-center justify-center text-white shadow-xs rounded-none' },
+                    h(IconGlobe, { className: 'w-5 h-5' })
+                  ),
+                  h('div', null,
+                    h('div', { className: 'flex items-center gap-1.5' },
+                      h('span', { className: 'text-xl sm:text-2xl font-bold tracking-tight text-slate-900' },
+                        'Global',
+                        h('span', { className: 'text-sky-500' }, 'Express')
+                      )
+                    ),
+                    h('span', { className: 'text-[11px] font-medium text-sky-600 tracking-wider uppercase block -mt-1' },
+                      'Logistics & Freight Services'
+                    )
+                  )
+                ),
+                h('div', { className: 'flex items-center gap-3 sm:gap-4' },
+                  currentView === 'details' && h('button', {
+                    id: 'header-back-btn',
+                    onClick: onResetToSearch,
+                    className: 'inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:text-sky-600 hover:bg-sky-50 rounded-md border border-slate-200 transition-colors cursor-pointer'
+                  },
+                    h(IconArrowLeft, { className: 'w-4 h-4' }),
+                    h('span', null, 'New Search')
+                  ),
+                  h('div', { className: 'hidden md:flex items-center gap-2 pl-3 border-l border-slate-200 text-xs text-slate-500' },
+                    h(IconShieldCheck, { className: 'w-4 h-4 text-sky-500' }),
+                    h('span', null, 'Verified Transport Network')
+                  )
+                )
+              )
+            )
+          );
+        }
+
+        // Tracking Search Component
+        function TrackingSearch({ onSearch }) {
+          const [inputValue, setInputValue] = useState('');
+          const [error, setError] = useState('');
+
+          const handleSubmit = function (e) {
+            e.preventDefault();
+            const clean = inputValue.trim().toUpperCase();
+            if (!clean) {
+              setError('Please enter a tracking number.');
+              return;
+            }
+            if (clean !== VALID_TRACKING_ID) {
+              setError('Tracking ID "' + inputValue.trim() + '" not found. Please verify your consignment code and try again.');
+              return;
+            }
+            setError('');
+            onSearch(clean);
+          };
+
+          return h('div', { id: 'tracking-search-section', className: 'w-full py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto' },
+            h('div', { className: 'bg-white border border-slate-200 shadow-xs p-6 sm:p-12 rounded-none' },
+              h('div', { className: 'inline-flex items-center gap-2 px-3 py-1 bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold mb-4 rounded-none' },
+                h(IconPackage, { className: 'w-3.5 h-3.5 text-sky-500' }),
+                h('span', null, 'Global Express Consignment Tracking')
+              ),
+              h('h1', { className: 'text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight' },
+                'Track Your Shipment'
+              ),
+              h('p', { className: 'mt-2 text-slate-600 text-sm sm:text-base max-w-xl leading-relaxed' },
+                'Enter your official Global Express tracking number to access freight specifications and consignee delivery details.'
+              ),
+              h('form', { onSubmit: handleSubmit, className: 'mt-8' },
+                h('div', { className: 'flex flex-col sm:flex-row gap-3' },
+                  h('div', { className: 'relative flex-1' },
+                    h('div', { className: 'absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400' },
+                      h(IconSearch, { className: 'w-5 h-5 text-sky-500' })
+                    ),
+                    h('input', {
+                      id: 'tracking-id-input',
+                      type: 'text',
+                      value: inputValue,
+                      onChange: function (e) {
+                        setInputValue(e.target.value);
+                        if (error) setError('');
+                      },
+                      placeholder: 'Enter Tracking ID (e.g. GE-849204812US)',
+                      className: 'w-full pl-11 pr-10 py-4 text-base font-medium text-slate-900 bg-white border-2 border-slate-300 rounded-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 transition-all placeholder:text-slate-400 outline-none',
+                      autoFocus: true
+                    }),
+                    inputValue && h('button', {
+                      type: 'button',
+                      onClick: function () {
+                        setInputValue('');
+                        setError('');
+                      },
+                      className: 'absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 rounded-md',
+                      title: 'Clear input'
+                    },
+                      h(IconX, { className: 'w-4 h-4' })
+                    )
+                  ),
+                  h('button', {
+                    id: 'submit-tracking-btn',
+                    type: 'submit',
+                    className: 'inline-flex items-center justify-center gap-2 px-8 py-4 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white font-semibold text-base rounded-md transition-all shadow-xs hover:shadow-sky-200 cursor-pointer'
+                  },
+                    h('span', null, 'Track'),
+                    h(IconArrowRight, { className: 'w-5 h-5' })
+                  )
+                ),
+                error && h('div', { className: 'mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium flex items-center gap-2 rounded-none' },
+                  h(IconAlertCircle, { className: 'w-4 h-4 shrink-0 text-rose-600' }),
+                  h('span', null, error)
+                ),
+                h('div', { className: 'mt-4 text-xs text-slate-400 pt-3 border-t border-slate-100' },
+                  h('span', null, 'Official Carrier Tracking System \u2022 Active Consignment Dispatch Network')
+                )
+              )
+            )
+          );
+        }
+
+        // Package Info Component
+        function PackageInfo({ shipment, onNewSearch }) {
+          const [copied, setCopied] = useState(false);
+          const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(true);
+
+          useEffect(function () {
+            const timer = setTimeout(function () {
+              setIsLoadingSkeleton(false);
+            }, 1500);
+            return function () { clearTimeout(timer); };
+          }, []);
+
+          const handleCopy = function () {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(shipment.trackingId);
+            }
+            setCopied(true);
+            setTimeout(function () { setCopied(false); }, 2000);
+          };
+
+          return h('div', { id: 'package-info-page', className: 'max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12' },
+            // Top Bar
+            h('div', { className: 'flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-sky-100' },
+              h('div', { className: 'flex items-center gap-3' },
+                h('div', { className: 'w-12 h-12 bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-xs rounded-none' },
+                  h(IconPackage, { className: 'w-6 h-6' })
+                ),
+                h('div', null,
+                  h('div', { className: 'flex items-center gap-2' },
+                    h('span', { className: 'text-xs font-semibold uppercase tracking-wider text-slate-400' }, 'Tracking Code'),
+                    h('button', {
+                      id: 'copy-tracking-id-btn',
+                      onClick: handleCopy,
+                      className: 'inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded-md transition-colors cursor-pointer',
+                      title: 'Copy tracking number'
+                    },
+                      copied ? h(IconCheck, { className: 'w-3 h-3 text-emerald-600' }) : h(IconCopy, { className: 'w-3 h-3' }),
+                      h('span', null, copied ? 'Copied' : 'Copy')
+                    )
+                  ),
+                  h('h1', { className: 'text-xl sm:text-2xl font-bold font-mono text-slate-900 tracking-tight' },
+                    shipment.trackingId
+                  )
+                )
+              ),
+              h('button', {
+                id: 'new-search-btn',
+                onClick: onNewSearch,
+                className: 'inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-md border border-slate-300 transition-colors shadow-xs cursor-pointer'
+              },
+                h('span', null, 'New Search')
+              )
+            ),
+
+            // Main Status Banner
+            h('div', { className: 'mt-6 bg-white border border-slate-200 shadow-xs p-6 sm:p-8 rounded-none' },
+              h('div', { className: 'flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100' },
+                h('div', null,
+                  h('div', { className: 'flex items-center gap-2.5 mb-1.5' },
+                    h('span', { className: 'inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200 rounded-none' },
+                      h('span', { className: 'w-2 h-2 rounded-full bg-sky-500 animate-ping' }),
+                      shipment.status
+                    ),
+                    h('span', { className: 'text-xs text-slate-400 font-medium' }, shipment.serviceType)
+                  ),
+                  h('h2', { className: 'text-lg sm:text-xl font-bold text-slate-900' },
+                    'In Transit \u2022 Freight Consignment Processing'
+                  )
+                ),
+                h('div', { className: 'md:text-right bg-sky-50/60 md:bg-transparent p-4 md:p-0 border md:border-none border-sky-100 rounded-none' },
+                  h('span', { className: 'text-xs font-medium text-slate-500 block' }, 'Estimated Delivery'),
+                  h('div', { className: 'flex items-center md:justify-end gap-1.5 mt-0.5' },
+                    h(IconLoader, { className: 'w-4 h-4 text-sky-500 animate-spin-custom' }),
+                    h('span', { className: 'text-base sm:text-lg font-bold text-sky-700 font-mono tracking-tight' },
+                      'Calculating...'
+                    )
+                  )
+                )
+              ),
+
+              // Route Overview
+              h('div', { className: 'pt-6 grid grid-cols-1 md:grid-cols-11 gap-4 items-center' },
+                h('div', { className: 'md:col-span-4 bg-slate-50 p-4 border border-slate-200 rounded-none' },
+                  h('div', { className: 'flex items-center gap-2 text-xs font-bold text-sky-600 uppercase tracking-wider mb-1' },
+                    h(IconMapPin, { className: 'w-3.5 h-3.5' }),
+                    h('span', null, 'Origin')
+                  ),
+                  h('div', { className: 'text-base font-bold text-slate-900' }, shipment.origin.state),
+                  h('div', { className: 'text-xs text-slate-500 mt-0.5' }, shipment.origin.city + ', ' + shipment.origin.state),
+                  h('div', { className: 'text-[11px] text-slate-400 mt-1' }, shipment.origin.hubName)
+                ),
+                h('div', { className: 'md:col-span-3 flex flex-col items-center justify-center px-2 py-2' },
+                  h('div', { className: 'w-full flex items-center justify-between text-[11px] font-semibold text-sky-600 mb-1' },
+                    h('span', null, 'Alabama'),
+                    h('span', { className: 'text-slate-400' }, '\u2192'),
+                    h('span', null, 'Indiana')
+                  ),
+                  h('div', { className: 'relative w-full h-2 bg-slate-100 rounded-none overflow-hidden border border-slate-200' },
+                    h('div', { className: 'absolute top-0 left-0 h-full bg-sky-500 w-[65%]' })
+                  ),
+                  h('span', { className: 'text-[10px] text-slate-400 mt-1' }, 'Interstate Transit Dispatch')
+                ),
+                h('div', { className: 'md:col-span-4 bg-slate-50 p-4 border border-slate-200 rounded-none' },
+                  h('div', { className: 'flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider mb-1' },
+                    h(IconMapPin, { className: 'w-3.5 h-3.5 text-sky-600' }),
+                    h('span', null, 'Destination')
+                  ),
+                  h('div', { className: 'text-base font-bold text-slate-900' }, shipment.destination.name),
+                  h('div', { className: 'text-xs text-slate-700 font-medium mt-0.5' }, shipment.destination.street),
+                  h('div', { className: 'text-xs text-slate-600' }, shipment.destination.city + ', ' + shipment.destination.state + ' ' + shipment.destination.zip)
+                )
+              )
+            ),
+
+            // Two Column Grid: Dimensions and Consignee Information
+            h('div', { className: 'mt-8 grid grid-cols-1 md:grid-cols-2 gap-6' },
+              // Package Dimensions Card
+              h('div', { className: 'bg-white border border-slate-200 shadow-xs p-6 rounded-none' },
+                h('div', { className: 'flex items-center justify-between pb-4 border-b border-slate-100' },
+                  h('div', { className: 'flex items-center gap-2.5' },
+                    h('div', { className: 'w-8 h-8 bg-sky-50 text-sky-600 flex items-center justify-center rounded-none border border-sky-100' },
+                      h(IconRuler, { className: 'w-4 h-4' })
+                    ),
+                    h('h3', { className: 'text-base font-bold text-slate-900' }, 'Package Dimensions')
+                  ),
+                  h('span', { className: 'text-xs font-medium px-2.5 py-0.5 bg-sky-50 text-sky-700 border border-sky-200 rounded-none' },
+                    'Certified Spec'
+                  )
+                ),
+                isLoadingSkeleton ?
+                  h('div', { className: 'mt-5 space-y-3.5 animate-pulse', role: 'status' },
+                    h('div', { className: 'grid grid-cols-2 gap-3.5' },
+                      [0, 1, 2, 3].map(function (i) {
+                        return h('div', { key: i, className: 'bg-slate-50 p-3.5 border border-slate-200 rounded-none space-y-2' },
+                          h('div', { className: 'h-3 bg-slate-200 w-16' }),
+                          h('div', { className: 'h-5 bg-slate-300 w-28' }),
+                          h('div', { className: 'h-2.5 bg-slate-200 w-20' })
+                        );
+                      })
+                    ),
+                    h('div', { className: 'p-4 bg-slate-100 border border-slate-200 rounded-none space-y-2' },
+                      h('div', { className: 'h-3 bg-slate-300 w-32' }),
+                      h('div', { className: 'h-3 bg-slate-200 w-full' })
+                    )
+                  ) :
+                  h('div', { className: 'mt-5 space-y-3.5' },
+                    h('div', { className: 'grid grid-cols-2 gap-3.5' },
+                      h('div', { className: 'bg-slate-50 p-3.5 border border-slate-200 rounded-none' },
+                        h('span', { className: 'text-[11px] font-medium text-slate-500 block' }, 'Length'),
+                        h('span', { className: 'text-sm sm:text-base font-bold text-slate-900 block mt-0.5' }, shipment.dimensions.length),
+                        h('span', { className: 'text-[10px] text-slate-400' }, '251 in / 6.37 m')
+                      ),
+                      h('div', { className: 'bg-slate-50 p-3.5 border border-slate-200 rounded-none' },
+                        h('span', { className: 'text-[11px] font-medium text-slate-500 block' }, 'Width'),
+                        h('span', { className: 'text-sm sm:text-base font-bold text-slate-900 block mt-0.5' }, shipment.dimensions.width),
+                        h('span', { className: 'text-[10px] text-slate-400' }, '82 in / 2.08 m')
+                      ),
+                      h('div', { className: 'bg-slate-50 p-3.5 border border-slate-200 rounded-none' },
+                        h('span', { className: 'text-[11px] font-medium text-slate-500 block' }, 'Height'),
+                        h('span', { className: 'text-sm sm:text-base font-bold text-slate-900 block mt-0.5' }, shipment.dimensions.height),
+                        h('span', { className: 'text-[10px] text-slate-400' }, '80 in / 2.03 m')
+                      ),
+                      h('div', { className: 'bg-sky-50/70 p-3.5 border border-sky-200 rounded-none' },
+                        h('span', { className: 'text-[11px] font-semibold text-sky-700 block' }, 'Shipping Weight'),
+                        h('span', { className: 'text-sm sm:text-base font-extrabold text-sky-950 block mt-0.5' }, shipment.dimensions.weight),
+                        h('span', { className: 'text-[10px] text-sky-700/80' }, '3,175 kg (Gross)')
+                      )
+                    ),
+                    h('div', { className: 'p-4 bg-slate-900 text-white rounded-none border border-slate-800' },
+                      h('div', { className: 'flex items-center justify-between text-xs text-sky-300 font-semibold mb-1' },
+                        h('span', null, 'Heavy Freight Classification'),
+                        h('span', null, '7,000 lb Payload')
+                      ),
+                      h('p', { className: 'text-[11px] text-slate-300 leading-relaxed' },
+                        'Consignment requires certified heavy freight equipment and tie-down protocols during transit and offload.'
+                      )
+                    )
+                  )
+              ),
+
+              // Consignee & Recipient Card
+              h('div', { className: 'bg-white border border-slate-200 shadow-xs p-6 rounded-none' },
+                h('div', { className: 'flex items-center gap-2.5 pb-4 border-b border-slate-100' },
+                  h('div', { className: 'w-8 h-8 bg-sky-50 text-sky-600 flex items-center justify-center rounded-none border border-sky-100' },
+                    h(IconUser, { className: 'w-4 h-4' })
+                  ),
+                  h('div', null,
+                    h('h3', { className: 'text-base font-bold text-slate-900' }, 'Consignee & Recipient Info'),
+                    h('span', { className: 'text-xs text-slate-400' }, 'Delivery verification record')
+                  )
+                ),
+                isLoadingSkeleton ?
+                  h('div', { className: 'mt-5 space-y-4 animate-pulse', role: 'status' },
+                    h('div', { className: 'flex justify-between items-center pb-3 border-b border-slate-100' },
+                      h('div', { className: 'h-3.5 bg-slate-200 w-24' }),
+                      h('div', { className: 'h-4 bg-slate-300 w-36' })
+                    ),
+                    h('div', { className: 'flex justify-between items-start pb-3 border-b border-slate-100' },
+                      h('div', { className: 'h-3.5 bg-slate-200 w-28' }),
+                      h('div', { className: 'space-y-1.5 w-48' },
+                        h('div', { className: 'h-3.5 bg-slate-300 w-full ml-auto' }),
+                        h('div', { className: 'h-3.5 bg-slate-200 w-3/4 ml-auto' })
+                      )
+                    ),
+                    h('div', { className: 'flex justify-between items-center pb-3 border-b border-slate-100' },
+                      h('div', { className: 'h-3.5 bg-slate-200 w-20' }),
+                      h('div', { className: 'h-4 bg-slate-300 w-20' })
+                    ),
+                    h('div', { className: 'flex justify-between items-center pb-1' },
+                      h('div', { className: 'h-3.5 bg-slate-200 w-24' }),
+                      h('div', { className: 'h-4 bg-slate-300 w-32' })
+                    ),
+                    h('div', { className: 'mt-4 p-3 bg-slate-100 border border-slate-200 rounded-none h-12' })
+                  ) :
+                  h('div', { className: 'mt-5 space-y-4 text-xs' },
+                    h('div', { className: 'flex justify-between items-start pb-3 border-b border-slate-100' },
+                      h('span', { className: 'text-slate-500 font-medium' }, 'Recipient Name:'),
+                      h('span', { className: 'font-bold text-slate-900 text-sm text-right' }, shipment.destination.name)
+                    ),
+                    h('div', { className: 'flex justify-between items-start pb-3 border-b border-slate-100' },
+                      h('span', { className: 'text-slate-500 font-medium' }, 'Delivery Address:'),
+                      h('span', { className: 'font-semibold text-slate-800 text-right max-w-[260px] leading-relaxed' }, shipment.destination.address)
+                    ),
+                    h('div', { className: 'flex justify-between items-center pb-3 border-b border-slate-100' },
+                      h('span', { className: 'text-slate-500 font-medium' }, 'Recipient Age:'),
+                      h('span', { className: 'font-semibold text-slate-900 bg-sky-50 px-2 py-0.5 text-sky-800 border border-sky-100 rounded-none' }, shipment.destination.age)
+                    ),
+                    h('div', { className: 'flex justify-between items-center pb-1' },
+                      h('span', { className: 'text-slate-500 font-medium' }, 'Date of Birth:'),
+                      h('span', { className: 'font-semibold text-slate-900 font-mono' }, shipment.destination.dob)
+                    ),
+                    h('div', { className: 'mt-4 flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 text-slate-700 text-[11px] rounded-none' },
+                      h(IconShieldCheck, { className: 'w-4 h-4 text-sky-600 shrink-0' }),
+                      h('span', null, 'Recipient Age Verification (62 yrs old \u2022 DOB Oct 23, 1963) registered for delivery release.')
+                    )
+                  )
+              )
+            )
+          );
+        }
+
+        // Footer Component
+        function Footer() {
+          return h('footer', { id: 'main-footer', className: 'mt-auto bg-white border-t border-slate-200 py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-500 rounded-none' },
+            h('div', { className: 'max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4' },
+              h('div', { className: 'flex items-center gap-2' },
+                h('div', { className: 'w-6 h-6 bg-sky-500 flex items-center justify-center text-white rounded-none' },
+                  h(IconGlobe, { className: 'w-3.5 h-3.5' })
+                ),
+                h('span', { className: 'font-bold text-slate-800 tracking-tight' }, 'Global Express'),
+                h('span', { className: 'text-slate-300' }, '|'),
+                h('span', null, 'Interstate & National Logistics Network')
+              ),
+              h('div', { className: 'flex flex-wrap items-center gap-4 sm:gap-6 text-slate-500' },
+                h('div', { className: 'flex items-center gap-1.5' },
+                  h(IconShieldCheck, { className: 'w-3.5 h-3.5 text-sky-500' }),
+                  h('span', null, 'Certified Consignment Release')
+                ),
+                h('span', null, '24/7 Dispatch Control: 1-800-GLOBAL-EX')
+              ),
+              h('div', { className: 'text-slate-400' },
+                '\u00A9 ' + new Date().getFullYear() + ' Global Express Freight Inc. All rights reserved.'
+              )
+            )
+          );
+        }
+
+        // Main App Component
+        function App() {
+          const [view, setView] = useState('search');
+          const [isLoading, setIsLoading] = useState(false);
+
+          const handleSearch = function (id) {
+            if (id !== VALID_TRACKING_ID) return;
+            setIsLoading(true);
+            setTimeout(function () {
+              setIsLoading(false);
+              setView('details');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 2500);
+          };
+
+          const handleReset = function () {
+            setView('search');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+
+          return h('div', { className: 'min-h-screen bg-slate-50/50 flex flex-col font-sans text-slate-900 selection:bg-sky-100 selection:text-sky-800 rounded-none' },
+            isLoading && h(LoadingScreen),
+            h(Header, { currentView: view, onResetToSearch: handleReset }),
+            h('main', { className: 'flex-1 flex flex-col' },
+              view === 'search' ?
+                h(TrackingSearch, { onSearch: handleSearch }) :
+                h(PackageInfo, { shipment: SHIPMENT_DATA, onNewSearch: handleReset })
+            ),
+            h(Footer)
+          );
+        }
+
+        // Mount to root DOM node
+        const root = createRoot(document.getElementById('root'));
+        root.render(h(App));
+      })();
+    </script>
+  </body>
+</html>
